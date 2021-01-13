@@ -7,6 +7,14 @@ def test_kraken_request_manager_init_default():
     assert req_man._api_domain == DEFAULT_KRAKEN_API_DOMAIN
     assert req_man._api_version == DEFAULT_KRAKEN_API_VERSION
 
+def test_kraken_request_manager_get_nonces():
+    req_man = KrakenRequestManager()
+    nonce1 = req_man.get_next_nonce()
+    nonce2 = req_man.get_next_nonce()
+    assert nonce1 > 0
+    assert nonce2 > 0
+    assert nonce1 < nonce2
+
 def test_kraken_session_set_api_key():
     req_man = KrakenSession()
     req_man.set_api_key("tempapikey")

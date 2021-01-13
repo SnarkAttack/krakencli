@@ -18,13 +18,12 @@ class KrakenRequestManager(object):
         return int(datetime.utcnow().timestamp()*100)
 
     def get_next_nonce(self):
-        nonce = generate_nonce()
-        while nonce <= self.prev_nonce:
-            nonce = generate_nonce()
+        nonce = self.generate_nonce()
+        while nonce <= self._prev_nonce:
+            nonce = self.generate_nonce()
+        print(nonce)
         self._prev_nonce = nonce
         return nonce
-
-
 
 class KrakenSession(object):
 
