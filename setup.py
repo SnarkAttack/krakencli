@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.0.1",
     author="Patrick McQuay",
     author_email="patrick.mcquay@gmail.com",
-    description="Python API for Kraken cryptocurrency trading site",
+    description="Python3 API for Kraken cryptocurrency trading site",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/pypa/sampleproject",
