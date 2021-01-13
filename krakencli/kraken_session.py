@@ -1,9 +1,30 @@
+import requests
+from datetime import datetime
 from .exceptions import *
 
 DEFAULT_KRAKEN_API_DOMAIN = "https://api.kraken.com"
 DEFAULT_KRAKEN_API_VERSION = 0
 DEFAULT_KRAKEN_API_PUBLIC_ADDRESS = "public"
 DEFAULT_KRAKEN_API_PRIVATE_ADDRESS = "private"
+
+class KrakenRequestManager(object):
+
+    def __init__(self, api_domain=DEFAULT_KRAKEN_API_DOMAIN, api_version=DEFAULT_KRAKEN_API_VERSION):
+        self._api_domain = api_domain
+        self._api_version = api_version
+        self._prev_nonce = 0
+
+    def generate_nonce(self):
+        return int(datetime.utcnow().timestamp()*100)
+
+    def get_next_nonce(self):
+        nonce = generate_nonce()
+        while nonce <= self.prev_nonce:
+            nonce = generate_nonce()
+        self._prev_nonce = nonce
+        return nonce
+
+
 
 class KrakenSession(object):
 
@@ -13,8 +34,7 @@ class KrakenSession(object):
                  api_key=None,
                  private_key=None
                 ):
-        self._api_domain = api_domain
-        self._api_version = api_version
+        self._request_manager = KrakenRequestManager(api_domain, api_version)
         self._api_key = api_key
         self._private_key = private_key
 
@@ -30,6 +50,10 @@ class KrakenSession(object):
                 [self._api_key, self._private_key] = [next(f).strip() for x in range(2)]
             except StopIteration as s:
                 raise InvalidKeyFile(file_path)
+
+
+
+
 
 if __name__ == "__main__":
     sess = KrakenSession()
