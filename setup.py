@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="kraken_cli", # Replace with your own username
+    name="krakencli",  # Replace with your own username
     version="0.0.1",
     author="Patrick McQuay",
     author_email="patrick.mcquay@gmail.com",
