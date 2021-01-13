@@ -1,4 +1,4 @@
-
+from .exceptions import *
 
 DEFAULT_KRAKEN_API_DOMAIN = "https://api.kraken.com"
 DEFAULT_KRAKEN_API_VERSION = 0
@@ -26,4 +26,11 @@ class KrakenSession(object):
 
     def load_keys_from_file(self, file_path):
         with open(file_path, "r") as f:
-            print
+            try:
+                [self._api_key, self._private_key] = [next(f).strip() for x in range(2)]
+            except StopIteration as s:
+                raise InvalidKeyFile(file_path)
+
+if __name__ == "__main__":
+    sess = KrakenSession()
+    sess.load_keys_from_file('tests/bad_test_kraken.key')
