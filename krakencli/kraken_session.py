@@ -54,7 +54,6 @@ class KrakenRequestManager(object):
         url = self.build_public_url(endpoint)
 
         response = requests.get(url, params=request_data)
-
         return response.json()['result']
 
 
@@ -131,22 +130,19 @@ class KrakenSession(object):
             else:
                 return base_validation
 
-        def _validate_user_parameter_timestamp(self,
-                                               name,
-                                               value,
-                                               required):
-            base_validation = self._validate_user_parameter_base(name, value, required)
-            if base_validation == value:
-                if value is not None:
-                    now_timestamp = datetime.utcnow().timestamp()
-                    if value-now_timestamp > 0:
-                        raise InvalidTimestampException(value)
-                    else:
-                        return self._validate_user_parameter_base()
+    def _validate_user_parameter_timestamp(self, name, value, required):
+        base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation == value:
+            if value is not None:
+                now_timestamp = datetime.utcnow().timestamp()
+                if value-now_timestamp > 0:
+                    raise InvalidTimestampException(name, value)
                 else:
-                    return None
+                    return value
             else:
-                return base_validation
+                return None
+        else:
+            return base_validation
 
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")
@@ -225,3 +221,43 @@ class KrakenSession(object):
                                                    'GetTickerInformation')
 
         return self._request_manager.make_public_request('Ticker', data)
+
+    def get_ohlc_data(self, pair, interval=None, since=None):
+
+        valid_asset_pairs = KRAKEN_ASSET_PAIRS
+        valid_time_interval = [1, 5, 15, 30, 60, 240, 1440, 10080, 21600]
+
+        data = {}
+
+        try:
+            data['pair'] = self._validate_user_parameter_value(
+                'pair',
+                pair,
+                valid_asset_pairs,
+                True
+            )
+            data['interval'] = self._validate_user_parameter_value(
+                'interval',
+                interval,
+                valid_time_interval,
+                False
+            )
+            data['since'] = self._validate_user_parameter_timestamp(
+                'since',
+                since,
+                False
+            )
+        except MissingRequiredParameterException as e:
+            raise MissingRequiredParameterException(e.param_name,
+                                                    'GetOHLCData')
+        except InvalidRequestParameterException as e:
+            raise InvalidRequestParameterException(e.param_name,
+                                                   e.param_value,
+                                                   e.valid_values,
+                                                   'GetOHLCData')
+        except InvalidTimestampException as e:
+            raise InvalidTimestampException(e.param_name,
+                                            e.param_value,
+                                            'GetOHLCData')
+
+        return self._request_manager.make_public_request("OHLC", data)

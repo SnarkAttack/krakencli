@@ -42,3 +42,12 @@ class InvalidRequestParameterException(Exception):
                           f"'{self.param_name}' parameter in a(n) "
                           f"'{self.request_type}' request. Please use one of "
                           f"the following values: {self.valid_values}"))
+
+
+class InvalidTimestampException(Exception):
+    def __init__(self, param_name, param_value, request_type=None):
+        self.param_name = param_name
+        self.param_value = param_value
+        self.request_type = request_type
+        super().__init__(f"'{self.param_value}' is not a valid timestamp for "
+                         f"{self.param_name} in a(n) {self.request_type} request.")
