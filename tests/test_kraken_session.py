@@ -9,6 +9,7 @@ from krakencli.kraken_session import (
 from krakencli.exceptions import (
     InvalidKeyFileException,
     InvalidPublicEndpointException,
+    InvalidRequestParameterException,
     InvalidRequestParameterOptionsException,
     MissingRequiredParameterException,
     InvalidTimestampException
@@ -218,3 +219,37 @@ def test_kraken_session_get_ohlc_data_since():
     with pytest.raises(InvalidTimestampException):
         future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
         sess.get_ohlc_data(asset_pair, since=future_timestamp)
+
+
+def test_kraken_session_get_order_book_base():
+
+    asset_pair = "XXRPZCAD"
+
+    sess = KrakenSession()
+    order_book = sess.get_order_book(asset_pair)
+    assert lists_match(order_book.keys(), [asset_pair])
+
+    asset_pair_order_book = order_book[asset_pair]
+    assert lists_match(asset_pair_order_book.keys(), ['asks', 'bids'])
+
+    with pytest.raises(MissingRequiredParameterException):
+        sess.get_order_book(None)
+
+    with pytest.raises(InvalidRequestParameterOptionsException):
+        sess.get_order_book("BadPAiR")
+
+
+def test_kraken_session_get_order_book_count():
+
+    asset_pair = "XXRPZCAD"
+    count = 3
+
+    sess = KrakenSession()
+    order_book = sess.get_order_book(asset_pair, count=count)
+
+    asset_pair_order_book = order_book[asset_pair]
+    for order_lists in asset_pair_order_book.values():
+        assert len(order_lists) <= count
+
+    with pytest.raises(InvalidRequestParameterException):
+        sess.get_order_book(asset_pair, "four")
