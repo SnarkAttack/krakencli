@@ -143,11 +143,10 @@ class KrakenSession(object):
         if base_validation is None:
             return None
         if base_validation == value:
-            now_timestamp = datetime.utcnow().timestamp()
-            if value - now_timestamp > 0:
-                raise InvalidTimestampException(name, value)
-            else:
+            if isinstance(value, float) or isinstance(value, int):
                 return value
+            else:
+                raise InvalidTimestampException(name, value)
         else:
             return base_validation
 
@@ -359,3 +358,36 @@ class KrakenSession(object):
                                             'GetRecentTrades')
 
         return self._request_manager.make_public_request('Trades', data)
+
+    def get_recent_spread_data(self, pair, since=None):
+
+        valid_asset_pairs = KRAKEN_ASSET_PAIRS
+
+        data = {}
+
+        try:
+            data['pair'] = self._validate_user_parameter_options(
+                'pair',
+                pair,
+                valid_asset_pairs,
+                True
+            )
+            data['since'] = self._validate_user_parameter_timestamp(
+                'since',
+                since,
+                False
+            )
+        except MissingRequiredParameterException as e:
+            raise MissingRequiredParameterException(e.param_name,
+                                                    'GetRecentSpreadData')
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetRecentSpreadData')
+        except InvalidTimestampException as e:
+            raise InvalidTimestampException(e.param_name,
+                                            e.param_value,
+                                            'GetRecentSpreadData')
+
+        return self._request_manager.make_public_request('Spread', data)

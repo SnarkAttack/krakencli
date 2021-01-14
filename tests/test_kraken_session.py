@@ -1,5 +1,4 @@
 import pytest
-from datetime import datetime, timedelta
 from krakencli.kraken_session import (
     KrakenSession,
     KrakenRequestManager,
@@ -27,6 +26,7 @@ from tests.test_defs import (
     ORDER_BOOK_ASKS_LENGTH,
     ORDER_BOOKS_BIDS_LENGTH,
     RECENT_TRADES_LENGTH,
+    RECENT_SPREAD_DATA_LENGTH
 )
 
 
@@ -244,8 +244,7 @@ def test_kraken_session_get_ohlc_data_since():
     for timestamp_data in ts_list:
         assert timestamp_data[0] > since_ts
     with pytest.raises(InvalidTimestampException):
-        future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
-        sess.get_ohlc_data(asset_pair, since=future_timestamp)
+        sess.get_ohlc_data(asset_pair, since="badinput")
 
 
 def test_kraken_session_get_order_book_base():
@@ -320,5 +319,40 @@ def test_kraken_session_get_recent_trades_since():
         assert trade[2] >= since
 
     with pytest.raises(InvalidTimestampException):
-        future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
-        sess.get_recent_trades(asset_pair, since=future_timestamp)
+        sess.get_recent_trades(asset_pair, since="11-12-20")
+
+
+def test_kraken_session_get_recent_spead_data_base():
+
+    asset_pair = "ETH2.SETH"
+
+    sess = KrakenSession()
+    recent_spread_data = sess.get_recent_spread_data(asset_pair)
+
+    assert lists_match(recent_spread_data.keys(), [asset_pair, 'last'])
+
+    recent_pair_spread_data = recent_spread_data[asset_pair]
+
+    for spread_data in recent_pair_spread_data:
+        assert len(spread_data) == RECENT_SPREAD_DATA_LENGTH
+
+    with pytest.raises(MissingRequiredParameterException):
+        sess.get_recent_spread_data(None)
+
+    with pytest.raises(InvalidRequestParameterOptionsException):
+        sess.get_recent_spread_data("EXXDEE")
+
+
+def test_kraken_session_get_recent_spread_data_since():
+
+    asset_pair = "ETH2.SETH"
+    since = 1610660690.1234
+
+    sess = KrakenSession()
+    recent_spread_data = sess.get_recent_spread_data(asset_pair, since=since)
+
+    for spread_data in recent_spread_data[asset_pair]:
+        assert spread_data[0] >= since
+
+    with pytest.raises(InvalidTimestampException):
+        sess.get_recent_trades(asset_pair, since="before time")
