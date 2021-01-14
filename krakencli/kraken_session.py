@@ -156,6 +156,7 @@ class KrakenSession(object):
         valid_asset_pairs = KRAKEN_ASSET_PAIRS
 
         data = {}
+
         try:
             data['info'] = self._validate_user_parameter_value('info',
                                                                info,
@@ -173,3 +174,26 @@ class KrakenSession(object):
                                                    'GetTradableAssetPairs')
 
         return self._request_manager.make_public_request('AssetPairs', data)
+
+    def get_ticker_information(self, pair):
+
+        valid_asset_pairs = KRAKEN_ASSET_PAIRS
+
+        data = {}
+
+        try:
+            data['pair'] = self._validate_user_parameter_comma_delimited(
+                                                                    'pair',
+                                                                    pair,
+                                                                    valid_asset_pairs,
+                                                                    True)
+        except MissingRequiredParameterException as e:
+            raise MissingRequiredParameterException(e.param_name,
+                                                    'GetTickerInformation')
+        except InvalidRequestParameterException as e:
+            raise InvalidRequestParameterException(e.param_name,
+                                                   e.param_value,
+                                                   e.valid_values,
+                                                   'GetTickerInformation')
+
+        return self._request_manager.make_public_request('Ticker', data)
