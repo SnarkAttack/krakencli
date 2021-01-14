@@ -1,4 +1,7 @@
 .vscode/
 env/
+build/
+dist/
+krakencli.egg-info/
 *.pyc
 .coverage
