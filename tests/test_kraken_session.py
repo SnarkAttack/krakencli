@@ -26,6 +26,7 @@ from tests.test_defs import (
     OHLC_DATA_LENGTH,
     ORDER_BOOK_ASKS_LENGTH,
     ORDER_BOOKS_BIDS_LENGTH,
+    RECENT_TRADES_LENGTH,
 )
 
 
@@ -285,3 +286,39 @@ def test_kraken_session_get_order_book_count():
 
     with pytest.raises(InvalidRequestParameterException):
         sess.get_order_book(asset_pair, "four")
+
+
+def test_kraken_session_get_recent_trades_base():
+
+    asset_pair = "OXTETH"
+
+    sess = KrakenSession()
+    recent_trades = sess.get_recent_trades(asset_pair)
+
+    assert lists_match(recent_trades.keys(), [asset_pair, 'last'])
+
+    recent_trades_pair = recent_trades[asset_pair]
+    for trade in recent_trades_pair:
+        assert len(trade) == RECENT_TRADES_LENGTH
+
+    with pytest.raises(MissingRequiredParameterException):
+        sess.get_recent_trades(None)
+
+    with pytest.raises(InvalidRequestParameterOptionsException):
+        sess.get_recent_trades("UNKCURR")
+
+
+def test_kraken_session_get_recent_trades_since():
+
+    asset_pair = "OXTETH"
+    since = 1610660648.5366
+
+    sess = KrakenSession()
+    recent_trades = sess.get_recent_trades(asset_pair, since=since)
+
+    for trade in recent_trades[asset_pair]:
+        assert trade[2] >= since
+
+    with pytest.raises(InvalidTimestampException):
+        future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
+        sess.get_recent_trades(asset_pair, since=future_timestamp)
