@@ -4,6 +4,7 @@ from .exceptions import (
     InvalidPublicEndpointException,
     InvalidKeyFileException,
     MissingRequiredParameterException,
+    InvalidRequestParameterException,
     InvalidRequestParameterOptionsException,
     InvalidTimestampException
 )
@@ -98,8 +99,10 @@ class KrakenSession(object):
                                          valid_options,
                                          required):
         base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation is None:
+            return None
         if base_validation == value:
-            if value is not None and value not in valid_options:
+            if value not in valid_options:
                 raise InvalidRequestParameterOptionsException(
                     name,
                     value,
@@ -120,39 +123,45 @@ class KrakenSession(object):
             comma_delimited_value,
             required
         )
+        if base_validation is None:
+            return None
         if base_validation == comma_delimited_value:
-            if comma_delimited_value is not None:
-                value_list = comma_delimited_value.split(',')
-                if all(value in valid_options for value in value_list):
-                    return comma_delimited_value
-                else:
-                    raise InvalidRequestParameterOptionsException(
-                        name,
-                        comma_delimited_value,
-                        valid_options
-                    )
+            value_list = comma_delimited_value.split(',')
+            if all(value in valid_options for value in value_list):
+                return comma_delimited_value
             else:
-                return base_validation
+                raise InvalidRequestParameterOptionsException(
+                    name,
+                    comma_delimited_value,
+                    valid_options
+                )
+        else:
+            return base_validation
 
     def _validate_user_parameter_timestamp(self, name, value, required):
         base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation is None:
+            return None
         if base_validation == value:
-            if value is not None:
-                now_timestamp = datetime.utcnow().timestamp()
-                if value - now_timestamp > 0:
-                    raise InvalidTimestampException(name, value)
-                else:
-                    return value
+            now_timestamp = datetime.utcnow().timestamp()
+            if value - now_timestamp > 0:
+                raise InvalidTimestampException(name, value)
             else:
-                return None
+                return value
         else:
             return base_validation
 
     def _validate_user_parameter_integer(self, name, value, required):
         base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation is None:
+            return None
         if base_validation == value:
             if not isinstance(value, int):
-                raise InvalidRequestParameterOptionsException(name, value)
+                raise InvalidRequestParameterException(name, value)
+            else:
+                return value
+        else:
+            return base_validation
 
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")

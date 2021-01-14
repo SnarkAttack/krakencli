@@ -27,6 +27,20 @@ class MissingRequiredParameterException(Exception):
                          f"a(n) '{self.request_type}' request.")
 
 
+class InvalidRequestParameterException(Exception):
+
+    def __init__(self,
+                 param_name,
+                 param_value,
+                 request_type=None):
+        self.param_name = param_name
+        self.param_value = param_value
+        self.request_type = request_type
+        super().__init__((f"'{self.param_value}' is an invalid option for the "
+                          f"'{self.param_name}' parameter in a(n) "
+                          f"'{self.request_type}"))
+
+
 class InvalidRequestParameterOptionsException(Exception):
 
     def __init__(self,
