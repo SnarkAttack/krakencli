@@ -8,7 +8,8 @@ from krakencli.kraken_session import (
 from krakencli.exceptions import (
     InvalidKeyFileException,
     InvalidPublicEndpointException,
-    InvalidRequestParameterException
+    InvalidRequestParameterException,
+    MissingRequiredParameterException
 )
 from tests.test_utilities import lists_match, list_in_list
 
@@ -151,3 +152,26 @@ def test_kraken_session_tradable_asset_pairs():
     with pytest.raises(InvalidRequestParameterException):
         bad_list_as_string = ','.join(bad_list)
         sess.get_tradable_asset_pairs(pair=bad_list_as_string)
+
+
+def test_kraken_session_get_ticker_information():
+
+    sess = KrakenSession()
+
+    with pytest.raises(MissingRequiredParameterException):
+        sess.get_ticker_information(None)
+
+    single_list = ['XXDGXXBT']
+    single_list_as_string = ','.join(single_list)
+    asset_pairs_single = sess.get_ticker_information(pair=single_list_as_string)
+    assert lists_match(asset_pairs_single.keys(), single_list)
+
+    multi_list = ['XETHZUSD', 'USDTEUR', 'KAVAEUR']
+    multi_list_as_string = ','.join(multi_list)
+    asset_pairs_multi = sess.get_ticker_information(pair=multi_list_as_string)
+    assert lists_match(asset_pairs_multi.keys(), multi_list)
+
+    bad_list = ['PAXGXBT', 'XLTCZEUR', 'GNOXBT', 'BADPAIR']
+    with pytest.raises(InvalidRequestParameterException):
+        bad_list_as_string = ','.join(bad_list)
+        sess.get_ticker_information(pair=bad_list_as_string)
