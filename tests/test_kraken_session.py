@@ -113,7 +113,10 @@ def test_kraken_session_get_tradable_asset_pairs_base():
     for asset in asset_pairs.values():
         assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
 
-    # Test all variations for info parameter
+
+def test_kraken_session_get_tradable_asset_pairs_info():
+
+    sess = KrakenSession()
     asset_pairs_info = sess.get_tradable_asset_pairs(info='info')
     for asset in asset_pairs_info.values():
         assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
@@ -129,8 +132,10 @@ def test_kraken_session_get_tradable_asset_pairs_base():
     with pytest.raises(InvalidRequestParameterException):
         sess.get_tradable_asset_pairs(info='bad')
 
-    # Test use of comma delimited lists of a few lengths
 
+def test_kraken_session_get_tradable_asset_pairs_pair():
+
+    sess = KrakenSession()
     single_list = ['XXDGXXBT']
     single_list_as_string = ','.join(single_list)
     asset_pairs_single = sess.get_tradable_asset_pairs(pair=single_list_as_string)
