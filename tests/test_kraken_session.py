@@ -74,19 +74,33 @@ def test_kraken_session_get_system_status():
     assert sorted(system_status.keys()) == sorted(['status', 'timestamp'])
 
 
-def test_kraken_session_get_asset_info():
+def test_kraken_session_get_asset_info_base():
 
     expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
-
     sess = KrakenSession()
+
     asset_info = sess.get_asset_info()
     for asset in asset_info.values():
         assert lists_match(asset.keys(), expected_keys)
+
+
+def test_kraken_session_get_asset_info_info():
+
+    expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
+    sess = KrakenSession()
+
     asset_info_info_param = sess.get_asset_info(info='info')
     for asset in asset_info_info_param.values():
         assert lists_match(asset.keys(), expected_keys)
     with pytest.raises(InvalidRequestParameterException):
         sess.get_asset_info(info='unknown')
+
+
+def test_kraken_session_get_asset_info_aclass():
+
+    expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
+    sess = KrakenSession()
+
     asset_info_aclass_param = sess.get_asset_info(aclass='currency')
     for asset in asset_info_aclass_param.values():
         assert lists_match(asset.keys(), expected_keys)
