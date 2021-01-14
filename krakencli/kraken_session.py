@@ -142,9 +142,6 @@ class KrakenSession(object):
                                                                  aclass,
                                                                  valid_aclass_options,
                                                                  False)
-        except MissingRequiredParameterException as e:
-            raise MissingRequiredParameterException(e.param_name,
-                                                    'GetAssetInfo')
         except InvalidRequestParameterException as e:
             raise InvalidRequestParameterException(e.param_name,
                                                    e.param_value,
@@ -169,9 +166,6 @@ class KrakenSession(object):
                                                                     pair,
                                                                     valid_asset_pairs,
                                                                     False)
-        except MissingRequiredParameterException as e:
-            raise MissingRequiredParameterException(e.param_name,
-                                                    'GetTradableAssetPairs')
         except InvalidRequestParameterException as e:
             raise InvalidRequestParameterException(e.param_name,
                                                    e.param_value,
