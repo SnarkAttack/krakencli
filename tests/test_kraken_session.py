@@ -175,7 +175,7 @@ def test_kraken_session_get_ticker_information():
         sess.get_ticker_information(pair=bad_list_as_string)
 
 
-def test_kraken_session_get_ohlc_data():
+def test_kraken_session_get_ohlc_data_base():
 
     sess = KrakenSession()
 
@@ -189,8 +189,13 @@ def test_kraken_session_get_ohlc_data():
     with pytest.raises(InvalidRequestParameterException):
         sess.get_ohlc_data("BADPAIR")
 
-    interval_mins = 60
 
+def test_kraken_session_get_ohlc_data_interval():
+
+    interval_mins = 60
+    asset_pair = 'SCXBT'
+
+    sess = KrakenSession()
     ohlc_data_interval = sess.get_ohlc_data(asset_pair, interval=interval_mins)
     ts_list = ohlc_data_interval[asset_pair]
     for i, timestamp_data in enumerate(ts_list):
@@ -199,14 +204,17 @@ def test_kraken_session_get_ohlc_data():
     with pytest.raises(InvalidRequestParameterException):
         sess.get_ohlc_data(asset_pair, interval=49)
 
-    since_ts = 1610640300
 
+def test_kraken_session_get_ohlc_data_since():
+
+    since_ts = 1610640300
+    asset_pair = 'SCXBT'
+
+    sess = KrakenSession()
     ohlc_data_since = sess.get_ohlc_data(asset_pair, since=since_ts)
     ts_list = ohlc_data_since[asset_pair]
-
     for timestamp_data in ts_list:
         assert timestamp_data[0] > since_ts
-
     with pytest.raises(InvalidTimestampException):
         future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
         sess.get_ohlc_data(asset_pair, since=future_timestamp)
