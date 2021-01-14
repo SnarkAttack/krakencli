@@ -287,3 +287,42 @@ class KrakenSession(object):
                                             'GetOHLCData')
 
         return self._request_manager.make_public_request("OHLC", data)
+
+    def get_order_book(self, pair, count=None):
+
+        valid_asset_pairs = KRAKEN_ASSET_PAIRS
+
+        data = {}
+
+        try:
+            data['pair'] = self._validate_user_parameter_options(
+                'pair',
+                pair,
+                valid_asset_pairs,
+                True
+            )
+            data['count'] = self._validate_user_parameter_integer(
+                'count',
+                count,
+                False
+            )
+        except MissingRequiredParameterException as e:
+            raise MissingRequiredParameterException(
+                e.param_name,
+                'GetOrderBook'
+            )
+        except InvalidRequestParameterException as e:
+            raise InvalidRequestParameterException(
+                e.param_name,
+                e.param_value,
+                'GetOrderBook'
+            )
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(
+                e.param_name,
+                e.param_value,
+                e.valid_values,
+                'GetOrderBook'
+            )
+
+        return self._request_manager.make_public_request('Depth', data)
