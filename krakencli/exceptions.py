@@ -27,7 +27,7 @@ class MissingRequiredParameterException(Exception):
                          f"a(n) '{self.request_type}' request.")
 
 
-class InvalidRequestParameterException(Exception):
+class InvalidRequestParameterOptionsException(Exception):
 
     def __init__(self,
                  param_name,

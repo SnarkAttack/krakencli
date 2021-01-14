@@ -4,7 +4,7 @@ from .exceptions import (
     InvalidPublicEndpointException,
     InvalidKeyFileException,
     MissingRequiredParameterException,
-    InvalidRequestParameterException,
+    InvalidRequestParameterOptionsException,
     InvalidTimestampException
 )
 from .kraken_api_values import (
@@ -28,7 +28,7 @@ class KrakenRequestManager(object):
         self._prev_nonce = 0
 
     def generate_nonce(self):
-        return int(datetime.utcnow().timestamp()*100)
+        return int(datetime.utcnow().timestamp() * 100)
 
     def get_next_nonce(self):
         nonce = self.generate_nonce()
@@ -92,15 +92,19 @@ class KrakenSession(object):
         else:
             return value
 
-    def _validate_user_parameter_value(self,
-                                       name,
-                                       value,
-                                       valid_options,
-                                       required):
+    def _validate_user_parameter_options(self,
+                                         name,
+                                         value,
+                                         valid_options,
+                                         required):
         base_validation = self._validate_user_parameter_base(name, value, required)
         if base_validation == value:
             if value is not None and value not in valid_options:
-                raise InvalidRequestParameterException(name, value, valid_options)
+                raise InvalidRequestParameterOptionsException(
+                    name,
+                    value,
+                    valid_options
+                )
             else:
                 return value
         else:
@@ -122,7 +126,7 @@ class KrakenSession(object):
                 if all(value in valid_options for value in value_list):
                     return comma_delimited_value
                 else:
-                    raise InvalidRequestParameterException(
+                    raise InvalidRequestParameterOptionsException(
                         name,
                         comma_delimited_value,
                         valid_options
@@ -135,7 +139,7 @@ class KrakenSession(object):
         if base_validation == value:
             if value is not None:
                 now_timestamp = datetime.utcnow().timestamp()
-                if value-now_timestamp > 0:
+                if value - now_timestamp > 0:
                     raise InvalidTimestampException(name, value)
                 else:
                     return value
@@ -143,6 +147,12 @@ class KrakenSession(object):
                 return None
         else:
             return base_validation
+
+    def _validate_user_parameter_integer(self, name, value, required):
+        base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation == value:
+            if not isinstance(value, int):
+                raise InvalidRequestParameterOptionsException(name, value)
 
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")
@@ -158,16 +168,20 @@ class KrakenSession(object):
         data = {}
 
         try:
-            data['info'] = self._validate_user_parameter_value('info',
-                                                               info,
-                                                               valid_info_options,
-                                                               False)
-            data['aclass'] = self._validate_user_parameter_value('aclass',
-                                                                 aclass,
-                                                                 valid_aclass_options,
-                                                                 False)
-        except InvalidRequestParameterException as e:
-            raise InvalidRequestParameterException(e.param_name,
+            data['info'] = self._validate_user_parameter_options(
+                'info',
+                info,
+                valid_info_options,
+                False
+            )
+            data['aclass'] = self._validate_user_parameter_options(
+                'aclass',
+                aclass,
+                valid_aclass_options,
+                False
+            )
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
                                                    e.param_value,
                                                    e.valid_values,
                                                    'GetAssetInfo')
@@ -182,17 +196,20 @@ class KrakenSession(object):
         data = {}
 
         try:
-            data['info'] = self._validate_user_parameter_value('info',
-                                                               info,
-                                                               valid_info_options,
-                                                               False)
+            data['info'] = self._validate_user_parameter_options(
+                'info',
+                info,
+                valid_info_options,
+                False
+            )
             data['pair'] = self._validate_user_parameter_comma_delimited(
-                                                                    'pair',
-                                                                    pair,
-                                                                    valid_asset_pairs,
-                                                                    False)
-        except InvalidRequestParameterException as e:
-            raise InvalidRequestParameterException(e.param_name,
+                'pair',
+                pair,
+                valid_asset_pairs,
+                False
+            )
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
                                                    e.param_value,
                                                    e.valid_values,
                                                    'GetTradableAssetPairs')
@@ -207,15 +224,15 @@ class KrakenSession(object):
 
         try:
             data['pair'] = self._validate_user_parameter_comma_delimited(
-                                                                    'pair',
-                                                                    pair,
-                                                                    valid_asset_pairs,
-                                                                    True)
+                'pair',
+                pair,
+                valid_asset_pairs,
+                True)
         except MissingRequiredParameterException as e:
             raise MissingRequiredParameterException(e.param_name,
                                                     'GetTickerInformation')
-        except InvalidRequestParameterException as e:
-            raise InvalidRequestParameterException(e.param_name,
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
                                                    e.param_value,
                                                    e.valid_values,
                                                    'GetTickerInformation')
@@ -230,13 +247,13 @@ class KrakenSession(object):
         data = {}
 
         try:
-            data['pair'] = self._validate_user_parameter_value(
+            data['pair'] = self._validate_user_parameter_options(
                 'pair',
                 pair,
                 valid_asset_pairs,
                 True
             )
-            data['interval'] = self._validate_user_parameter_value(
+            data['interval'] = self._validate_user_parameter_options(
                 'interval',
                 interval,
                 valid_time_interval,
@@ -250,8 +267,8 @@ class KrakenSession(object):
         except MissingRequiredParameterException as e:
             raise MissingRequiredParameterException(e.param_name,
                                                     'GetOHLCData')
-        except InvalidRequestParameterException as e:
-            raise InvalidRequestParameterException(e.param_name,
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
                                                    e.param_value,
                                                    e.valid_values,
                                                    'GetOHLCData')

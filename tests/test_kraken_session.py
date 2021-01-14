@@ -9,7 +9,7 @@ from krakencli.kraken_session import (
 from krakencli.exceptions import (
     InvalidKeyFileException,
     InvalidPublicEndpointException,
-    InvalidRequestParameterException,
+    InvalidRequestParameterOptionsException,
     MissingRequiredParameterException,
     InvalidTimestampException
 )
@@ -92,7 +92,7 @@ def test_kraken_session_get_asset_info_info():
     asset_info_info_param = sess.get_asset_info(info='info')
     for asset in asset_info_info_param.values():
         assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_asset_info(info='unknown')
 
 
@@ -102,7 +102,7 @@ def test_kraken_session_get_asset_info_aclass():
     asset_info_aclass_param = sess.get_asset_info(aclass='currency')
     for asset in asset_info_aclass_param.values():
         assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_asset_info(aclass='unknown')
 
 
@@ -129,7 +129,7 @@ def test_kraken_session_get_tradable_asset_pairs_info():
     asset_pairs_margin = sess.get_tradable_asset_pairs(info='margin')
     for asset in asset_pairs_margin.values():
         assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_tradable_asset_pairs(info='bad')
 
 
@@ -147,7 +147,7 @@ def test_kraken_session_get_tradable_asset_pairs_pair():
     assert lists_match(asset_pairs_multi.keys(), multi_list)
 
     bad_list = ['PAXGXBT', 'XLTCZEUR', 'GNOXBT', 'BADPAIR']
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         bad_list_as_string = ','.join(bad_list)
         sess.get_tradable_asset_pairs(pair=bad_list_as_string)
 
@@ -170,7 +170,7 @@ def test_kraken_session_get_ticker_information():
     assert lists_match(asset_pairs_multi.keys(), multi_list)
 
     bad_list = ['PAXGXBT', 'XLTCZEUR', 'GNOXBT', 'BADPAIR']
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         bad_list_as_string = ','.join(bad_list)
         sess.get_ticker_information(pair=bad_list_as_string)
 
@@ -186,7 +186,7 @@ def test_kraken_session_get_ohlc_data_base():
     ohlc_data = sess.get_ohlc_data(asset_pair)
     assert lists_match(ohlc_data.keys(), [asset_pair, 'last'])
 
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_ohlc_data("BADPAIR")
 
 
@@ -201,7 +201,7 @@ def test_kraken_session_get_ohlc_data_interval():
     for i, timestamp_data in enumerate(ts_list):
         if i > 0:
             assert timestamp_data[0]-(interval_mins*60) == ts_list[i-1][0]
-    with pytest.raises(InvalidRequestParameterException):
+    with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_ohlc_data(asset_pair, interval=49)
 
 
