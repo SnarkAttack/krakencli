@@ -14,10 +14,18 @@ from krakencli.exceptions import (
     MissingRequiredParameterException,
     InvalidTimestampException
 )
-from tests.test_utilities import lists_match, list_in_list
+from tests.test_utilities import (
+    lists_match,
+    list_in_list,
+    dict_value_length_check
+)
 from tests.test_defs import (
     ALL_POSSIBLE_ASSET_PAIR_KEYS,
-    EXPECTED_ASSET_INFO_KEYS
+    EXPECTED_ASSET_INFO_KEYS,
+    TICKER_RESULTS_EXPECTED_LENGTH,
+    OHLC_DATA_LENGTH,
+    ORDER_BOOK_ASKS_LENGTH,
+    ORDER_BOOKS_BIDS_LENGTH,
 )
 
 
@@ -160,10 +168,24 @@ def test_kraken_session_get_ticker_information():
     with pytest.raises(MissingRequiredParameterException):
         sess.get_ticker_information(None)
 
-    single_list = ['XXDGXXBT']
+    single_pair = 'XXDGXXBT'
+    single_list = [single_pair]
     single_list_as_string = ','.join(single_list)
     asset_pairs_single = sess.get_ticker_information(pair=single_list_as_string)
     assert lists_match(asset_pairs_single.keys(), single_list)
+
+    ticker_data_pair = asset_pairs_single[single_pair]
+    assert lists_match(
+        ticker_data_pair.keys(),
+        ['a', 'b', 'c', 'v', 'p', 't', 'l', 'h', 'o']
+    )
+
+    for key in ticker_data_pair.keys():
+        # 'o' represents opening value, which is not a list
+        if key != 'o':
+            assert dict_value_length_check(key,
+                                        ticker_data_pair,
+                                        TICKER_RESULTS_EXPECTED_LENGTH)
 
     multi_list = ['XETHZUSD', 'USDTEUR', 'KAVAEUR']
     multi_list_as_string = ','.join(multi_list)
@@ -186,6 +208,10 @@ def test_kraken_session_get_ohlc_data_base():
     asset_pair = 'SCXBT'
     ohlc_data = sess.get_ohlc_data(asset_pair)
     assert lists_match(ohlc_data.keys(), [asset_pair, 'last'])
+
+    ohlc_pair_data = ohlc_data[asset_pair]
+    for time_data in ohlc_pair_data:
+        assert len(time_data) == OHLC_DATA_LENGTH
 
     with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_ohlc_data("BADPAIR")
@@ -231,6 +257,12 @@ def test_kraken_session_get_order_book_base():
 
     asset_pair_order_book = order_book[asset_pair]
     assert lists_match(asset_pair_order_book.keys(), ['asks', 'bids'])
+
+    for ask in asset_pair_order_book['asks']:
+        assert len(ask) == ORDER_BOOK_ASKS_LENGTH
+
+    for bids in asset_pair_order_book['bids']:
+        assert len(bids) == ORDER_BOOKS_BIDS_LENGTH
 
     with pytest.raises(MissingRequiredParameterException):
         sess.get_order_book(None)
