@@ -355,4 +355,4 @@ def test_kraken_session_get_recent_spread_data_since():
         assert spread_data[0] >= since
 
     with pytest.raises(InvalidTimestampException):
-        sess.get_recent_spread_data(asset_pair, since=-100000000)
+        sess.get_recent_spread_data(asset_pair, since="bad")
