@@ -101,17 +101,15 @@ class KrakenSession(object):
         base_validation = self._validate_user_parameter_base(name, value, required)
         if base_validation is None:
             return None
-        if base_validation == value:
-            if value not in valid_options:
-                raise InvalidRequestParameterOptionsException(
-                    name,
-                    value,
-                    valid_options
-                )
-            else:
-                return value
         else:
-            return base_validation
+            if base_validation == value:
+                if value in valid_options:
+                    return value
+            raise InvalidRequestParameterOptionsException(
+                name,
+                value,
+                valid_options
+            )
 
     def _validate_user_parameter_comma_delimited(self,
                                                  name,
@@ -125,42 +123,35 @@ class KrakenSession(object):
         )
         if base_validation is None:
             return None
-        if base_validation == comma_delimited_value:
-            value_list = comma_delimited_value.split(',')
-            if all(value in valid_options for value in value_list):
-                return comma_delimited_value
-            else:
-                raise InvalidRequestParameterOptionsException(
-                    name,
-                    comma_delimited_value,
-                    valid_options
-                )
         else:
-            return base_validation
+            if base_validation == comma_delimited_value:
+                value_list = comma_delimited_value.split(',')
+                if all(value in valid_options for value in value_list):
+                    return comma_delimited_value
+            raise InvalidRequestParameterOptionsException(
+                name,
+                comma_delimited_value,
+                valid_options
+            )
 
     def _validate_user_parameter_timestamp(self, name, value, required):
         base_validation = self._validate_user_parameter_base(name, value, required)
         if base_validation is None:
             return None
-        if base_validation == value:
-            if isinstance(value, float) or isinstance(value, int):
-                return value
-            else:
-                raise InvalidTimestampException(name, value)
         else:
-            return base_validation
+            if base_validation == value:
+                if isinstance(value, float) or isinstance(value, int):
+                    return value
+            raise InvalidTimestampException(name, value)
 
     def _validate_user_parameter_integer(self, name, value, required):
         base_validation = self._validate_user_parameter_base(name, value, required)
         if base_validation is None:
             return None
         if base_validation == value:
-            if not isinstance(value, int):
-                raise InvalidRequestParameterException(name, value)
-            else:
+            if isinstance(value, int):
                 return value
-        else:
-            return base_validation
+            raise InvalidRequestParameterException(name, value)
 
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")
