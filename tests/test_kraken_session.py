@@ -346,7 +346,7 @@ def test_kraken_session_get_recent_spead_data_base():
 def test_kraken_session_get_recent_spread_data_since():
 
     asset_pair = "ETH2.SETH"
-    since = 1610660690.1234
+    since = 1610650690.1234
 
     sess = KrakenSession()
     recent_spread_data = sess.get_recent_spread_data(asset_pair, since=since)
