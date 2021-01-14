@@ -14,6 +14,10 @@ from krakencli.exceptions import (
     InvalidTimestampException
 )
 from tests.test_utilities import lists_match, list_in_list
+from tests.test_defs import (
+    ALL_POSSIBLE_ASSET_PAIR_KEYS,
+    EXPECTED_ASSET_INFO_KEYS
+)
 
 
 def test_kraken_request_manager_init_default():
@@ -76,79 +80,52 @@ def test_kraken_session_get_system_status():
 
 def test_kraken_session_get_asset_info_base():
 
-    expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
     sess = KrakenSession()
-
     asset_info = sess.get_asset_info()
     for asset in asset_info.values():
-        assert lists_match(asset.keys(), expected_keys)
+        assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
 
 
 def test_kraken_session_get_asset_info_info():
 
-    expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
     sess = KrakenSession()
-
     asset_info_info_param = sess.get_asset_info(info='info')
     for asset in asset_info_info_param.values():
-        assert lists_match(asset.keys(), expected_keys)
+        assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
     with pytest.raises(InvalidRequestParameterException):
         sess.get_asset_info(info='unknown')
 
 
 def test_kraken_session_get_asset_info_aclass():
 
-    expected_keys = ['altname', 'aclass', 'decimals', 'display_decimals']
     sess = KrakenSession()
-
     asset_info_aclass_param = sess.get_asset_info(aclass='currency')
     for asset in asset_info_aclass_param.values():
-        assert lists_match(asset.keys(), expected_keys)
+        assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
     with pytest.raises(InvalidRequestParameterException):
         sess.get_asset_info(aclass='unknown')
 
 
-def test_kraken_session_tradable_asset_pairs():
-
-    all_possible_keys = [
-        'aclass_base',
-        'aclass_quote',
-        'altname',
-        'base',
-        'fee_volume_currency',
-        'fees',
-        'fees_maker',
-        'leverage_buy',
-        'leverage_sell',
-        'lot',
-        'lot_decimals',
-        'lot_multiplier',
-        'margin_call',
-        'margin_stop',
-        'ordermin',
-        'pair_decimals',
-        'quote',
-        'wsname',
-    ]
+def test_kraken_session_get_tradable_asset_pairs_base():
 
     sess = KrakenSession()
     asset_pairs = sess.get_tradable_asset_pairs()
     for asset in asset_pairs.values():
-        assert list_in_list(asset.keys(), all_possible_keys)
+        assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
 
     # Test all variations for info parameter
     asset_pairs_info = sess.get_tradable_asset_pairs(info='info')
     for asset in asset_pairs_info.values():
-        assert list_in_list(asset.keys(), all_possible_keys)
+        assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
     asset_pairs_leverage = sess.get_tradable_asset_pairs(info='leverage')
     for asset in asset_pairs_leverage.values():
-        assert list_in_list(asset.keys(), all_possible_keys)
+        assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
     asset_pairs_fees = sess.get_tradable_asset_pairs(info='fees')
     for asset in asset_pairs_fees.values():
-        assert list_in_list(asset.keys(), all_possible_keys)
+        assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
     asset_pairs_margin = sess.get_tradable_asset_pairs(info='margin')
     for asset in asset_pairs_margin.values():
-        assert list_in_list(asset.keys(), all_possible_keys)
+        assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
     with pytest.raises(InvalidRequestParameterException):
         sess.get_tradable_asset_pairs(info='bad')
 
