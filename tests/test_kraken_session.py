@@ -1,4 +1,5 @@
 import pytest
+from datetime import datetime, timedelta
 from krakencli.kraken_session import (
     KrakenSession,
     KrakenRequestManager,
@@ -9,7 +10,8 @@ from krakencli.exceptions import (
     InvalidKeyFileException,
     InvalidPublicEndpointException,
     InvalidRequestParameterException,
-    MissingRequiredParameterException
+    MissingRequiredParameterException,
+    InvalidTimestampException
 )
 from tests.test_utilities import lists_match, list_in_list
 
@@ -175,3 +177,40 @@ def test_kraken_session_get_ticker_information():
     with pytest.raises(InvalidRequestParameterException):
         bad_list_as_string = ','.join(bad_list)
         sess.get_ticker_information(pair=bad_list_as_string)
+
+
+def test_kraken_session_get_ohlc_data():
+
+    sess = KrakenSession()
+
+    with pytest.raises(MissingRequiredParameterException):
+        sess.get_ohlc_data(None)
+
+    asset_pair = 'SCXBT'
+    ohlc_data = sess.get_ohlc_data(asset_pair)
+    assert lists_match(ohlc_data.keys(), [asset_pair, 'last'])
+
+    with pytest.raises(InvalidRequestParameterException):
+        sess.get_ohlc_data("BADPAIR")
+
+    interval_mins = 60
+
+    ohlc_data_interval = sess.get_ohlc_data(asset_pair, interval=interval_mins)
+    ts_list = ohlc_data_interval[asset_pair]
+    for i, timestamp_data in enumerate(ts_list):
+        if i > 0:
+            assert timestamp_data[0]-(interval_mins*60) == ts_list[i-1][0]
+    with pytest.raises(InvalidRequestParameterException):
+        sess.get_ohlc_data(asset_pair, interval=49)
+
+    since_ts = 1610640300
+
+    ohlc_data_since = sess.get_ohlc_data(asset_pair, since=since_ts)
+    ts_list = ohlc_data_since[asset_pair]
+
+    for timestamp_data in ts_list:
+        assert timestamp_data[0] > since_ts
+
+    with pytest.raises(InvalidTimestampException):
+        future_timestamp = (datetime.utcnow()+timedelta(days=1)).timestamp()
+        sess.get_ohlc_data(asset_pair, since=future_timestamp)
