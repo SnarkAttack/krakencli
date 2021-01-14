@@ -326,3 +326,36 @@ class KrakenSession(object):
             )
 
         return self._request_manager.make_public_request('Depth', data)
+
+    def get_recent_trades(self, pair, since=None):
+
+        valid_asset_pairs = KRAKEN_ASSET_PAIRS
+
+        data = {}
+
+        try:
+            data['pair'] = self._validate_user_parameter_options(
+                'pair',
+                pair,
+                valid_asset_pairs,
+                True
+            )
+            data['since'] = self._validate_user_parameter_timestamp(
+                'since',
+                since,
+                False
+            )
+        except MissingRequiredParameterException as e:
+            raise MissingRequiredParameterException(e.param_name,
+                                                    'GetRecentTrades')
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetRecentTrades')
+        except InvalidTimestampException as e:
+            raise InvalidTimestampException(e.param_name,
+                                            e.param_value,
+                                            'GetRecentTrades')
+
+        return self._request_manager.make_public_request('Trades', data)
