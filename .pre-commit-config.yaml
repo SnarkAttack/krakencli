@@ -16,12 +16,6 @@ repos:
             - "--ignore=E128,E226"
 -   repo: local
     hooks:
-    # -   id: pytest
-    #     name: pytest
-    #     entry: env/bin/pytest
-    #     language: script
-    #     pass_filenames: false
-    #     always_run: true
     -   id: coverage
         name: coverage
         entry: env/bin/coverage run -m pytest
