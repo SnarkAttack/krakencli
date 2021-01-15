@@ -89,19 +89,17 @@ class KrakenRequestManager(object):
         response = requests.get(url, params=request_data)
         return response.json()['result']
 
-    def make_private_request(self, endpoint, otp):
+    def make_private_request(self, endpoint, request_data={}):
         if self._api_key is None or self._private_key is None:
             raise NoApiKeysException()
         if endpoint not in KRAKEN_VALID_PRIVATE_ENDPOINTS:
             raise InvalidPrivateEndpointException(endpoint)
-        url = self.build_url(DEFAULT_KRAKEN_API_PRIVATE_ADDRESS, endpoint)
+        url = self.build_private_url(endpoint)
 
         nonce = self.get_next_nonce()
 
         post_data = {}
         post_data['nonce'] = nonce
-        if otp is not None:
-            post_data['otp'] = otp
 
         headers = self._make_private_request_headers(url, post_data)
 
@@ -439,4 +437,4 @@ class KrakenSession(object):
         return self._request_manager.make_public_request('Spread', data)
 
     def get_account_balance(self):
-        return self._request_manager.make_private_request('Balance', None)
+        return self._request_manager.make_private_request('Balance')
