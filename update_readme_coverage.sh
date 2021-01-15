@@ -18,5 +18,4 @@ then
 else
     color="red"
 fi
-#sed 's/[0-9]\+%25-[a-z]\+/{$percent}%25-green/g' README.md
 sed -E -i '' "s/[0-9]+%25-[a-z]+/${percent}%25-${color}/" README.md
