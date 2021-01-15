@@ -11,7 +11,8 @@ from krakencli.exceptions import (
     InvalidRequestParameterException,
     InvalidRequestParameterOptionsException,
     MissingRequiredParameterException,
-    InvalidTimestampException
+    InvalidTimestampException,
+    NoApiKeysException
 )
 from tests.test_utilities import (
     lists_match,
@@ -356,3 +357,15 @@ def test_kraken_session_get_recent_spread_data_since():
 
     with pytest.raises(InvalidTimestampException):
         sess.get_recent_spread_data(asset_pair, since="bad")
+
+
+def test_kraken_session_get_account_balance_base():
+
+    sess = KrakenSession()
+
+    with pytest.raises(NoApiKeysException):
+        sess.get_account_balance()
+
+    sess.load_keys_from_file('kraken.key')
+    account_balance = sess.get_account_balance()
+    assert isinstance(account_balance, dict)
