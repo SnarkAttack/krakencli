@@ -103,9 +103,10 @@ class KrakenRequestManager(object):
 
         nonce = self.get_next_nonce()
 
-        post_data = {
-            'nonce': nonce,
-        }
+        post_data = {}
+        post_data['nonce'] = nonce
+        if otp is not None:
+            post_data['otp'] = otp
 
         headers = self._make_private_request_headers(url, post_data)
 
@@ -442,5 +443,5 @@ class KrakenSession(object):
 
         return self._request_manager.make_public_request('Spread', data)
 
-    def get_account_balance(self, otp):
-        return self._request_manager.make_private_request('Balance', otp)
+    def get_account_balance(self):
+        return self._request_manager.make_private_request('Balance', None)
