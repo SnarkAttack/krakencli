@@ -5,3 +5,4 @@ dist/
 krakencli.egg-info/
 *.pyc
 .coverage
+kraken.key
