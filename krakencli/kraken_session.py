@@ -107,7 +107,7 @@ class KrakenRequestManager(object):
 
         response = requests.post(url, headers=headers, data=post_data)
 
-        print(response.json())
+        return response.json()['result']
 
 
 class KrakenSession(object):
