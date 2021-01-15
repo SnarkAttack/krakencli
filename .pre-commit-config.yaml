@@ -24,5 +24,5 @@ repos:
         always_run: true
     -   id: update-coverage
         name: update-coverage
-        entry: ./update_readme_coverage.sh & git add README.md
+        entry: ./update_readme_coverage.sh && git add README.md
         language: script

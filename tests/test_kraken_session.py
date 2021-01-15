@@ -8,6 +8,7 @@ from krakencli.kraken_session import (
 from krakencli.exceptions import (
     InvalidKeyFileException,
     InvalidPublicEndpointException,
+    InvalidPrivateEndpointException,
     InvalidRequestParameterException,
     InvalidRequestParameterOptionsException,
     MissingRequiredParameterException,
@@ -357,6 +358,15 @@ def test_kraken_session_get_recent_spread_data_since():
 
     with pytest.raises(InvalidTimestampException):
         sess.get_recent_spread_data(asset_pair, since="bad")
+
+
+def test_kraken_session_bad_private_endpoint():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(InvalidPrivateEndpointException):
+        sess._request_manager.make_private_request('UNKNOWN')
 
 
 def test_kraken_session_get_account_balance_base():
