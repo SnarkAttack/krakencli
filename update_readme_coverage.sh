@@ -1,5 +1,5 @@
 #!/bin/bash
-percent=$(coverage report -m | tail -1 | grep -o '...$' | sed -E 's/[^0-9]+//g')
+percent=$(coverage report -m | tail -1 | grep -o '....$' | sed -E 's/[^0-9]+//g')
 if [[ $percent -eq 100 ]]
 then
     color="brightgreen"
