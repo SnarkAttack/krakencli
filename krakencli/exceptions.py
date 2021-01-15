@@ -29,7 +29,7 @@ class InvalidPublicEndpointException(Exception):
                          f"{KRAKEN_VALID_PUBLIC_ENDPOINTS}")
 
 
-class InvalidPrivateEndpointException():
+class InvalidPrivateEndpointException(Exception):
 
     def __init__(self, bad_endpoint):
         self.bad_endpoint = bad_endpoint
@@ -72,10 +72,10 @@ class InvalidRequestParameterOptionsException(Exception):
         self.param_value = param_value
         self.valid_values = valid_values
         self.request_type = request_type
-        super().__init__((f"'{self.param_value}' is an invalid option for the "
-                          f"'{self.param_name}' parameter in a(n) "
-                          f"'{self.request_type}' request. Please use one of "
-                          f"the following values: {self.valid_values}"))
+        super().__init__(f"'{self.param_value}' is an invalid option for the "
+                         f"'{self.param_name}' parameter in a(n) "
+                         f"'{self.request_type}' request. Please use one of "
+                         f"the following values: {self.valid_values}")
 
 
 class InvalidTimestampException(Exception):
