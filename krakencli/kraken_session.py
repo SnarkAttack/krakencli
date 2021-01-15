@@ -63,13 +63,9 @@ class KrakenRequestManager(object):
         headers = {}
         headers['API-Key'] = self._api_key
 
-        print(self._api_key)
-        print(self._private_key)
-
         url_encoded_post_data = urllib.parse.urlencode(post_data)
         nonce = post_data['nonce']
         internal_data = (str(nonce)+url_encoded_post_data).encode()
-        print(internal_data)
 
         private_key_b64_dec = base64.b64decode(self._private_key)
         uri = '/'+url.lstrip(self._api_domain)
@@ -81,7 +77,6 @@ class KrakenRequestManager(object):
         h = base64.b64encode(h.digest())
         h = h.decode()
         headers['API-Sign'] = h
-        print(h)
 
         return headers
 
