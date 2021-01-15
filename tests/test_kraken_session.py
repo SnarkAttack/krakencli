@@ -54,20 +54,20 @@ def test_kraken_request_manager_public_request_bad_endpoint():
 def test_kraken_session_set_api_key():
     sess = KrakenSession()
     sess.set_api_key("tempapikey")
-    assert sess._api_key == "tempapikey"
+    assert sess._request_manager._api_key == "tempapikey"
 
 
 def test_kraken_session_set_private_key():
     sess = KrakenSession()
     sess.set_private_key("tempprivatekey")
-    assert sess._private_key == "tempprivatekey"
+    assert sess._request_manager._private_key == "tempprivatekey"
 
 
 def test_kraken_session_load_keys_from_file():
     sess = KrakenSession()
     sess.load_keys_from_file('tests/test_kraken.key')
-    assert sess._api_key == "testapikey"
-    assert sess._private_key == "testprivatekey"
+    assert sess._request_manager._api_key == "testapikey"
+    assert sess._request_manager._private_key == "testprivatekey"
 
 
 def test_kraken_session_load_keys_from_file_bad():

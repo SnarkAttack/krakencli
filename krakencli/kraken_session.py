@@ -1,15 +1,22 @@
 import requests
-from datetime import datetime
+import hmac
+import base64
+import urllib.parse
+from hashlib import sha256, sha512
+import time
 from .exceptions import (
     InvalidPublicEndpointException,
+    InvalidPrivateEndpointException,
     InvalidKeyFileException,
     MissingRequiredParameterException,
     InvalidRequestParameterException,
     InvalidRequestParameterOptionsException,
-    InvalidTimestampException
+    InvalidTimestampException,
+    NoApiKeysException,
 )
 from .kraken_api_values import (
     KRAKEN_VALID_PUBLIC_ENDPOINTS,
+    KRAKEN_VALID_PRIVATE_ENDPOINTS,
     KRAKEN_ASSET_PAIRS
 )
 
@@ -23,19 +30,22 @@ class KrakenRequestManager(object):
 
     def __init__(self,
                  api_domain=DEFAULT_KRAKEN_API_DOMAIN,
-                 api_version=DEFAULT_KRAKEN_API_VERSION):
+                 api_version=DEFAULT_KRAKEN_API_VERSION,
+                 api_key=None,
+                 private_key=None):
         self._api_domain = api_domain
         self._api_version = api_version
         self._prev_nonce = 0
+        self._api_key = api_key
+        self._private_key = private_key
 
     def generate_nonce(self):
-        return int(datetime.utcnow().timestamp() * 100)
+        return int(time.time() * 1000)
 
     def get_next_nonce(self):
         nonce = self.generate_nonce()
         while nonce <= self._prev_nonce:
             nonce = self.generate_nonce()
-        print(nonce)
         self._prev_nonce = nonce
         return nonce
 
@@ -45,8 +55,35 @@ class KrakenRequestManager(object):
     def build_public_url(self, endpoint):
         return self.build_url(DEFAULT_KRAKEN_API_PUBLIC_ADDRESS, endpoint)
 
-    def build_private_address(self, endpoint):
+    def build_private_url(self, endpoint):
         return self.build_url(DEFAULT_KRAKEN_API_PRIVATE_ADDRESS, endpoint)
+
+    def _make_private_request_headers(self, url, post_data):
+
+        headers = {}
+        headers['API-Key'] = self._api_key
+
+        print(self._api_key)
+        print(self._private_key)
+
+        url_encoded_post_data = urllib.parse.urlencode(post_data)
+        nonce = post_data['nonce']
+        internal_data = (str(nonce)+url_encoded_post_data).encode()
+        print(internal_data)
+
+        private_key_b64_dec = base64.b64decode(self._private_key)
+        uri = '/'+url.lstrip(self._api_domain)
+        enc_url = uri.encode()
+        internal_sha256 = sha256(internal_data).digest()
+        msg = enc_url+internal_sha256
+
+        h = hmac.new(private_key_b64_dec, msg, sha512)
+        h = base64.b64encode(h.digest())
+        h = h.decode()
+        headers['API-Sign'] = h
+        print(h)
+
+        return headers
 
     def make_public_request(self, endpoint, request_data={}):
         if endpoint not in KRAKEN_VALID_PUBLIC_ENDPOINTS:
@@ -57,6 +94,25 @@ class KrakenRequestManager(object):
         response = requests.get(url, params=request_data)
         return response.json()['result']
 
+    def make_private_request(self, endpoint, otp):
+        if self._api_key is None or self._private_key is None:
+            raise NoApiKeysException()
+        if endpoint not in KRAKEN_VALID_PRIVATE_ENDPOINTS:
+            raise InvalidPrivateEndpointException(endpoint)
+        url = self.build_url(DEFAULT_KRAKEN_API_PRIVATE_ADDRESS, endpoint)
+
+        nonce = self.get_next_nonce()
+
+        post_data = {
+            'nonce': nonce,
+        }
+
+        headers = self._make_private_request_headers(url, post_data)
+
+        response = requests.post(url, headers=headers, data=post_data)
+
+        print(response.json())
+
 
 class KrakenSession(object):
 
@@ -65,20 +121,23 @@ class KrakenSession(object):
                  api_version=DEFAULT_KRAKEN_API_VERSION,
                  api_key=None,
                  private_key=None):
-        self._request_manager = KrakenRequestManager(api_domain, api_version)
-        self._api_key = api_key
-        self._private_key = private_key
+        self._request_manager = KrakenRequestManager(
+            api_domain,
+            api_version,
+            api_key,
+            private_key
+        )
 
     def set_api_key(self, api_key):
-        self._api_key = api_key
+        self._request_manager._api_key = api_key
 
     def set_private_key(self, private_key):
-        self._private_key = private_key
+        self._request_manager._private_key = private_key
 
     def load_keys_from_file(self, file_path):
         with open(file_path, "r") as f:
             try:
-                [self._api_key, self._private_key] = (
+                [self._request_manager._api_key, self._request_manager._private_key] = (
                     [next(f).strip() for x in range(2)]
                 )
             except StopIteration:
@@ -382,3 +441,6 @@ class KrakenSession(object):
                                             'GetRecentSpreadData')
 
         return self._request_manager.make_public_request('Spread', data)
+
+    def get_account_balance(self, otp):
+        return self._request_manager.make_private_request('Balance', otp)
