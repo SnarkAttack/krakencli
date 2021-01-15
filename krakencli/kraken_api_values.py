@@ -10,6 +10,36 @@ KRAKEN_VALID_PUBLIC_ENDPOINTS = [
     "Spread",
 ]
 
+KRAKEN_VALID_PRIVATE_ENDPOINTS = [
+    "Balance",
+    "TradeBalance",
+    "OpenOrders",
+    "ClosedOrders",
+    "QueryOrders",
+    "TradesHistory",
+    "QueryTrades",
+    "OpenPositions",
+    "Ledgers",
+    "QueryLedgers",
+    "TradeVolume",
+    "AddExport",
+    "ExportStatus",
+    "RetrieveExport",
+    "RemoveExport",
+    "AddOrder",
+    "CancelOrder",
+    "CancelAll",
+    "CancelAllOrdersAfter",
+    "DepositMethods",
+    "DepositAddresses",
+    "DepositStatus",
+    "WithdrawInfo",
+    "Withdraw",
+    "WithdrawStatus",
+    "WithdrawCancel",
+    "WalletTransfer",
+]
+
 KRAKEN_ASSET_PAIRS = [
     "AAVEETH",
     "AAVEEUR",
