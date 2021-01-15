@@ -1,4 +1,7 @@
-from .kraken_api_values import KRAKEN_VALID_PUBLIC_ENDPOINTS
+from .kraken_api_values import (
+    KRAKEN_VALID_PUBLIC_ENDPOINTS,
+    KRAKEN_VALID_PRIVATE_ENDPOINTS
+)
 
 
 class InvalidKeyFileException(Exception):
@@ -9,13 +12,30 @@ class InvalidKeyFileException(Exception):
                          f"not formatted properly")
 
 
+class NoApiKeysException(Exception):
+
+    def __init__(self):
+        super().__init__("The KrakenSesson is missing an API key, private key, "
+                         "or both. Please try reloading keys before any further "
+                         "calls.")
+
+
 class InvalidPublicEndpointException(Exception):
 
     def __init__(self, bad_endpoint):
         self.bad_endpoint = bad_endpoint
-        super().__init__(f"'{self.bad_endpoint}' is not a valid endpoint. "
+        super().__init__(f"'{self.bad_endpoint}' is not a valid public endpoint. "
                          f"Please use one of the following endpoints: "
                          f"{KRAKEN_VALID_PUBLIC_ENDPOINTS}")
+
+
+class InvalidPrivateEndpointException():
+
+    def __init__(self, bad_endpoint):
+        self.bad_endpoint = bad_endpoint
+        super().__init__(f"'{self.bad_endpoint}' is not a valid private endpoint. "
+                         f"Please use one of the following endpoints: "
+                         f"{KRAKEN_VALID_PRIVATE_ENDPOINTS}")
 
 
 class MissingRequiredParameterException(Exception):
