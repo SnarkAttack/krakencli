@@ -38,6 +38,17 @@ TICKER_RESULTS_EXPECTED_LENGTH = {
     'o': 1,
 }
 
+TRADE_BALANCE_RESULT_KEYS = [
+    'eb',
+    'tb',
+    'm',
+    'n',
+    'c',
+    'v',
+    'e',
+    'mf',
+]
+
 OHLC_DATA_LENGTH = 8
 ORDER_BOOK_ASKS_LENGTH = 3
 ORDER_BOOKS_BIDS_LENGTH = 3
