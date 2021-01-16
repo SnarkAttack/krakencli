@@ -6,3 +6,4 @@ krakencli.egg-info/
 *.pyc
 .coverage
 kraken.key
+validate_coverage_score.py
