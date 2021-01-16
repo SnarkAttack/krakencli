@@ -1,0 +1,23 @@
+echo "Running pre-push hook"
+coverage run -m pytest
+exit_var=$?
+if [[ $exit_var == 0 ]]
+then
+	echo "Tests passed"
+	cov_score=$(coverage report -m | tail -1 | grep -o '....$')
+	python3 validate_coverage_score.py ${cov_score}
+	match_check=$?
+	echo $match_check
+	if [[ $match_check == 0 ]]
+	then
+		exit 0
+	else
+		git add README.md & git commit -m "Updated README.md with corerct coverage score"
+		echo "README.md coverage score did not match newly calculated coverage.
+An updated README.md has been committed, please try pushing again"
+		exit 1
+	fi
+else
+	echo "Pytest failed: exit code ${exit_var}"
+	exit 1
+fi
