@@ -21,7 +21,6 @@ repos:
         entry: env/bin/coverage run -m pytest
         language: script
         pass_filenames: false
-        always_run: true
     -   id: update-coverage
         name: update-coverage
         entry: ./update_readme_coverage.sh && git add README.md
