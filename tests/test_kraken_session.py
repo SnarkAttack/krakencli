@@ -28,7 +28,8 @@ from tests.test_defs import (
     ORDER_BOOK_ASKS_LENGTH,
     ORDER_BOOKS_BIDS_LENGTH,
     RECENT_TRADES_LENGTH,
-    RECENT_SPREAD_DATA_LENGTH
+    RECENT_SPREAD_DATA_LENGTH,
+    TRADE_BALANCE_RESULT_KEYS,
 )
 
 
@@ -369,13 +370,50 @@ def test_kraken_session_bad_private_endpoint():
         sess._request_manager.make_private_request('UNKNOWN')
 
 
-def test_kraken_session_get_account_balance_base():
-
+def test_kraken_session_private_request_no_keys():
     sess = KrakenSession()
 
     with pytest.raises(NoApiKeysException):
         sess.get_account_balance()
 
+
+def test_kraken_session_get_account_balance_base():
+
+    sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
+
     account_balance = sess.get_account_balance()
     assert isinstance(account_balance, dict)
+
+
+def test_kraken_session_get_trade_balance_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    trade_balance = sess.get_trade_balance()
+    assert lists_match(trade_balance.keys(), TRADE_BALANCE_RESULT_KEYS)
+
+
+def test_kraken_session_get_trade_balance_aclass():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    trade_balance = sess.get_trade_balance(aclass='currency')
+    assert lists_match(trade_balance.keys(), TRADE_BALANCE_RESULT_KEYS)
+
+    with pytest.raises(InvalidRequestParameterOptionsException):
+        sess.get_trade_balance(aclass="otherstuff")
+
+
+def test_kraken_session_get_trade_balance_asset():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    trade_balance = sess.get_trade_balance(asset='ZCAD')
+    assert lists_match(trade_balance.keys(), TRADE_BALANCE_RESULT_KEYS)
+
+    with pytest.raises(InvalidRequestParameterOptionsException):
+        sess.get_trade_balance(asset='FNYMN')

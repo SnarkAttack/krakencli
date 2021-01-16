@@ -17,6 +17,7 @@ from .exceptions import (
 from .kraken_api_values import (
     KRAKEN_VALID_PUBLIC_ENDPOINTS,
     KRAKEN_VALID_PRIVATE_ENDPOINTS,
+    KRAKEN_ASSETS,
     KRAKEN_ASSET_PAIRS
 )
 
@@ -105,6 +106,9 @@ class KrakenRequestManager(object):
 
         response = requests.post(url, headers=headers, data=post_data)
 
+        # TODO: REthink how results are returned, there are some cases where a valid
+        # API call exists and returns a 200 status code without a result field
+        # (Example is calling balance on account with no balance)
         return response.json()['result']
 
 
@@ -438,3 +442,30 @@ class KrakenSession(object):
 
     def get_account_balance(self):
         return self._request_manager.make_private_request('Balance')
+
+    def get_trade_balance(self, aclass=None, asset=None):
+
+        valid_aclass_options = ['currency']
+
+        data = {}
+
+        try:
+            data['aclass'] = self._validate_user_parameter_options(
+                'aclass',
+                aclass,
+                valid_aclass_options,
+                False
+            )
+            data['asset'] = self._validate_user_parameter_options(
+                'asset',
+                asset,
+                KRAKEN_ASSETS,
+                False
+            )
+        except InvalidRequestParameterOptionsException as e:
+            raise InvalidRequestParameterOptionsException(e.param_name,
+                                                          e.param_value,
+                                                          KRAKEN_ASSETS,
+                                                          'GetTradeBalance')
+
+        return self._request_manager.make_private_request('TradeBalance', data)
