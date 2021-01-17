@@ -210,6 +210,15 @@ class KrakenSession(object):
                 return value
             raise InvalidRequestParameterException(name, value)
 
+    def _validate_user_parameter_boolean(self, name, value, required):
+        base_validation = self._validate_user_parameter_base(name, value, required)
+        if base_validation is None:
+            return None
+        if base_validation == value:
+            if isinstance(value, bool):
+                return value
+            raise InvalidRequestParameterException(name, value)
+
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")
 
@@ -238,9 +247,9 @@ class KrakenSession(object):
             )
         except InvalidRequestParameterOptionsException as e:
             raise InvalidRequestParameterOptionsException(e.param_name,
-                                                   e.param_value,
-                                                   e.valid_values,
-                                                   'GetAssetInfo')
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetAssetInfo')
 
         return self._request_manager.make_public_request('Assets', data)
 
@@ -266,9 +275,9 @@ class KrakenSession(object):
             )
         except InvalidRequestParameterOptionsException as e:
             raise InvalidRequestParameterOptionsException(e.param_name,
-                                                   e.param_value,
-                                                   e.valid_values,
-                                                   'GetTradableAssetPairs')
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetTradableAssetPairs')
 
         return self._request_manager.make_public_request('AssetPairs', data)
 
@@ -289,9 +298,9 @@ class KrakenSession(object):
                                                     'GetTickerInformation')
         except InvalidRequestParameterOptionsException as e:
             raise InvalidRequestParameterOptionsException(e.param_name,
-                                                   e.param_value,
-                                                   e.valid_values,
-                                                   'GetTickerInformation')
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetTickerInformation')
 
         return self._request_manager.make_public_request('Ticker', data)
 
@@ -325,9 +334,9 @@ class KrakenSession(object):
                                                     'GetOHLCData')
         except InvalidRequestParameterOptionsException as e:
             raise InvalidRequestParameterOptionsException(e.param_name,
-                                                   e.param_value,
-                                                   e.valid_values,
-                                                   'GetOHLCData')
+                                                          e.param_value,
+                                                          e.valid_values,
+                                                          'GetOHLCData')
         except InvalidTimestampException as e:
             raise InvalidTimestampException(e.param_name,
                                             e.param_value,
@@ -469,3 +478,25 @@ class KrakenSession(object):
                                                           'GetTradeBalance')
 
         return self._request_manager.make_private_request('TradeBalance', data)
+
+    def get_open_orders(self, trades=None, userref=None):
+
+        data = {}
+
+        try:
+            data['trades'] = self._validate_user_parameter_boolean(
+                'trades',
+                trades,
+                False
+            )
+            data['userref'] = self._validate_user_parameter_integer(
+                'userref',
+                userref,
+                False
+            )
+        except InvalidRequestParameterException as e:
+            raise InvalidRequestParameterException(e.param_name,
+                                                   e.param_value,
+                                                   'GetOpenOrders')
+
+        return self._request_manager.make_private_request('OpenOrders', data)
