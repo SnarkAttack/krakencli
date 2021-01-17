@@ -386,6 +386,7 @@ def test_get_trade_balance_asset():
     with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_trade_balance(asset='FNYMN')
 
+
 def test_get_open_orders_base():
 
     sess = KrakenSession()
@@ -393,3 +394,228 @@ def test_get_open_orders_base():
 
     open_orders = sess.get_open_orders()
     assert lists_match(open_orders.keys(), ['open'])
+
+
+def test_get_closed_orders_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_closed_orders()
+
+
+def test_query_orders_info_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.query_orders_info(1)
+
+
+def test_get_trades_history_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_trades_history()
+
+
+def test_query_trade_info_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.query_trade_info(1)
+
+
+def test_get_open_positions_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_open_positions(1)
+
+
+def test_get_ledgers_info_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_ledgers_info()
+
+
+def test_query_ledgers_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.query_ledgers(1)
+
+
+def test_get_trade_volume_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_trade_volume()
+
+
+def test_request_export_report_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.request_export_report("a", 2)
+
+
+def test_get_export_statuses_bases():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_export_statuses(1)
+
+
+def test_get_export_report_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_export_report(1)
+
+
+def test_remove_export_report_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.remove_export_report(1, 1)
+
+
+def test_add_standard_order_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.add_standard_order(1, 1, 1, 1)
+
+
+def test_cancel_open_order_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.cancel_open_order(1)
+
+
+def test_cancel_all_open_orders_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.cancel_all_open_orders()
+
+
+def test_cancel_all_orders_after_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.cancel_all_orders_after(1)
+
+
+def test_get_deposit_method_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_deposit_method(1)
+
+
+def test_get_deposit_addresses_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_deposit_addresses(1, 1)
+
+
+def test_get_deposit_status_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_deposit_status(1, 1)
+
+
+def test_get_withdrawal_information_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_withdrawal_information(1, 1, 1)
+
+
+def test_withdraw_funds_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.withdraw_funds(1, 1, 1)
+
+
+def test_get_status_of_recent_withdrawals():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_status_of_recent_withdrawals(1, 1)
+
+
+def test_request_withdrawal_cancellation_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.request_withdrawal_cancellation(1, 1)
+
+
+def test_wallet_transfer_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.wallet_transfer(1, 1, 1, 1)
+
+
+def test_get_web_socket_token_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    with pytest.raises(NotImplementedError):
+        sess.get_web_socket_token()
