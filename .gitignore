@@ -8,3 +8,4 @@ krakencli.egg-info/
 kraken.key
 validate_coverage_score.py
 *.code-workspace
+.flake8
