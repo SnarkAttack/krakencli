@@ -32,28 +32,6 @@ from tests.test_defs import (
     TRADE_BALANCE_RESULT_KEYS,
 )
 
-
-def test_kraken_request_manager_init_default():
-    req_man = KrakenRequestManager()
-    assert req_man._api_domain == DEFAULT_KRAKEN_API_DOMAIN
-    assert req_man._api_version == DEFAULT_KRAKEN_API_VERSION
-
-
-def test_kraken_request_manager_get_nonces():
-    req_man = KrakenRequestManager()
-    nonce1 = req_man.get_next_nonce()
-    nonce2 = req_man.get_next_nonce()
-    assert nonce1 > 0
-    assert nonce2 > 0
-    assert nonce1 < nonce2
-
-
-def test_kraken_request_manager_public_request_bad_endpoint():
-    req_man = KrakenRequestManager()
-    with pytest.raises(InvalidPublicEndpointException):
-        req_man.make_public_request("bad_request", {})
-
-
 def test_set_api_key():
     sess = KrakenSession()
     sess.set_api_key("tempapikey")
@@ -359,16 +337,6 @@ def test_get_recent_spread_data_since():
 
     with pytest.raises(InvalidTimestampException):
         sess.get_recent_spread_data(asset_pair, since="bad")
-
-
-def test_bad_private_endpoint():
-
-    sess = KrakenSession()
-    sess.load_keys_from_file('kraken.key')
-
-    with pytest.raises(InvalidPrivateEndpointException):
-        sess._request_manager.make_private_request('UNKNOWN')
-
 
 def test_private_request_no_keys():
     sess = KrakenSession()
