@@ -219,6 +219,10 @@ class KrakenSession(object):
                 return value
             raise InvalidRequestParameterException(name, value)
 
+    """
+    Public market data functions
+    """
+
     def get_server_time(self):
         return self._request_manager.make_public_request("Time")
 
@@ -449,6 +453,10 @@ class KrakenSession(object):
 
         return self._request_manager.make_public_request('Spread', data)
 
+    """
+    Private user data functions
+    """
+
     def get_account_balance(self):
         return self._request_manager.make_private_request('Balance')
 
@@ -500,3 +508,121 @@ class KrakenSession(object):
                                                    'GetOpenOrders')
 
         return self._request_manager.make_private_request('OpenOrders', data)
+
+    def get_closed_orders(self,
+                          trades=None,
+                          userref=None,
+                          start=None,
+                          end=None,
+                          ofs=None,
+                          closetime=None):
+        raise NotImplementedError()
+
+    def query_orders_info(self, txid, trades=None, userref=None):
+        raise NotImplementedError()
+
+    def get_trades_history(self,
+                           type=None,
+                           trades=None,
+                           start=None,
+                           end=None,
+                           ofs=None):
+        raise NotImplementedError()
+
+    def query_trade_info(self, txid, trades=None):
+        raise NotImplementedError()
+
+    def get_open_positions(self, txid, docalcs=None, colsolidation=None):
+        raise NotImplementedError()
+
+    def get_ledgers_info(self,
+                         aclass=None,
+                         asset=None,
+                         type=None,
+                         start=None,
+                         end=None,
+                         ofs=None):
+        raise NotImplementedError()
+
+    def query_ledgers(self, id):
+        raise NotImplementedError()
+
+    def get_trade_volume(self, pair=None, fee_info=None):
+        raise NotImplementedError()
+
+    def request_export_report(self,
+                              description,
+                              report,
+                              format=None,
+                              asset=None,
+                              starttm=None,
+                              endtm=None):
+        raise NotImplementedError()
+
+    def get_export_statuses(self, report):
+        raise NotImplementedError()
+
+    def get_export_report(self, id):
+        raise NotImplementedError()
+
+    def remove_export_report(self, type, id):
+        raise NotImplementedError()
+
+    """
+    Private user trading functions
+    """
+
+    def add_standard_order(self,
+                           pair,
+                           type,
+                           ordertype,
+                           volume,
+                           price=None,
+                           price2=None,
+                           leverage=None,
+                           oflags=None,
+                           starttm=None,
+                           expiretm=None,
+                           userref=None,
+                           validate=None):
+        raise NotImplementedError()
+
+    def cancel_open_order(self, txid):
+        raise NotImplementedError()
+
+    def cancel_all_open_orders(self):
+        raise NotImplementedError()
+
+    def cancel_all_orders_after(self, timeout):
+        raise NotImplementedError()
+
+    """
+    Private user funding functions
+    """
+
+    def get_deposit_method(self, asset, aclass=None):
+        raise NotImplementedError()
+
+    def get_deposit_addresses(self, asset, method, aclass=None, new=None):
+        raise NotImplementedError()
+
+    def get_deposit_status(self, asset, method, aclass=None):
+        raise NotImplementedError()
+
+    def get_withdrawal_information(self, asset, amount, key, aclass=None):
+        raise NotImplementedError()
+
+    def withdraw_funds(self, asset, amount, key, aclass=None):
+        raise NotImplementedError()
+
+    def get_status_of_recent_withdrawals(self, asset, method, aclass=None):
+        raise NotImplementedError()
+
+    def request_withdrawal_cancellation(self, asset, refid, aclass=None):
+        raise NotImplementedError()
+
+    def wallet_transfer(self, asset, to, frm, amount):
+        raise NotImplementedError()
+
+    def get_web_socket_token(self):
+        raise NotImplementedError()
