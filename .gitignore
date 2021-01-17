@@ -7,3 +7,4 @@ krakencli.egg-info/
 .coverage
 kraken.key
 validate_coverage_score.py
+*.code-workspace
