@@ -54,44 +54,44 @@ def test_kraken_request_manager_public_request_bad_endpoint():
         req_man.make_public_request("bad_request", {})
 
 
-def test_kraken_session_set_api_key():
+def test_set_api_key():
     sess = KrakenSession()
     sess.set_api_key("tempapikey")
     assert sess._request_manager._api_key == "tempapikey"
 
 
-def test_kraken_session_set_private_key():
+def test_set_private_key():
     sess = KrakenSession()
     sess.set_private_key("tempprivatekey")
     assert sess._request_manager._private_key == "tempprivatekey"
 
 
-def test_kraken_session_load_keys_from_file():
+def test_load_keys_from_file():
     sess = KrakenSession()
     sess.load_keys_from_file('tests/test_kraken.key')
     assert sess._request_manager._api_key == "testapikey"
     assert sess._request_manager._private_key == "testprivatekey"
 
 
-def test_kraken_session_load_keys_from_file_bad():
+def test_load_keys_from_file_bad():
     sess = KrakenSession()
     with pytest.raises(InvalidKeyFileException):
         sess.load_keys_from_file('tests/bad_test_kraken.key')
 
 
-def test_kraken_session_get_server_time():
+def test_get_server_time():
     sess = KrakenSession()
     server_time = sess.get_server_time()
     assert sorted(server_time.keys()) == sorted(['unixtime', 'rfc1123'])
 
 
-def test_kraken_session_get_system_status():
+def test_get_system_status():
     sess = KrakenSession()
     system_status = sess.get_system_status()
     assert sorted(system_status.keys()) == sorted(['status', 'timestamp'])
 
 
-def test_kraken_session_get_asset_info_base():
+def test_get_asset_info_base():
 
     sess = KrakenSession()
     asset_info = sess.get_asset_info()
@@ -99,7 +99,7 @@ def test_kraken_session_get_asset_info_base():
         assert lists_match(asset.keys(), EXPECTED_ASSET_INFO_KEYS)
 
 
-def test_kraken_session_get_asset_info_info():
+def test_get_asset_info_info():
 
     sess = KrakenSession()
     asset_info_info_param = sess.get_asset_info(info='info')
@@ -109,7 +109,7 @@ def test_kraken_session_get_asset_info_info():
         sess.get_asset_info(info='unknown')
 
 
-def test_kraken_session_get_asset_info_aclass():
+def test_get_asset_info_aclass():
 
     sess = KrakenSession()
     asset_info_aclass_param = sess.get_asset_info(aclass='currency')
@@ -119,7 +119,7 @@ def test_kraken_session_get_asset_info_aclass():
         sess.get_asset_info(aclass='unknown')
 
 
-def test_kraken_session_get_tradable_asset_pairs_base():
+def test_get_tradable_asset_pairs_base():
 
     sess = KrakenSession()
     asset_pairs = sess.get_tradable_asset_pairs()
@@ -127,7 +127,7 @@ def test_kraken_session_get_tradable_asset_pairs_base():
         assert list_in_list(asset.keys(), ALL_POSSIBLE_ASSET_PAIR_KEYS)
 
 
-def test_kraken_session_get_tradable_asset_pairs_info():
+def test_get_tradable_asset_pairs_info():
 
     sess = KrakenSession()
     asset_pairs_info = sess.get_tradable_asset_pairs(info='info')
@@ -146,7 +146,7 @@ def test_kraken_session_get_tradable_asset_pairs_info():
         sess.get_tradable_asset_pairs(info='bad')
 
 
-def test_kraken_session_get_tradable_asset_pairs_pair():
+def test_get_tradable_asset_pairs_pair():
 
     sess = KrakenSession()
     single_list = ['XXDGXXBT']
@@ -165,7 +165,7 @@ def test_kraken_session_get_tradable_asset_pairs_pair():
         sess.get_tradable_asset_pairs(pair=bad_list_as_string)
 
 
-def test_kraken_session_get_ticker_information():
+def test_get_ticker_information():
 
     sess = KrakenSession()
 
@@ -202,7 +202,7 @@ def test_kraken_session_get_ticker_information():
         sess.get_ticker_information(pair=bad_list_as_string)
 
 
-def test_kraken_session_get_ohlc_data_base():
+def test_get_ohlc_data_base():
 
     sess = KrakenSession()
 
@@ -221,7 +221,7 @@ def test_kraken_session_get_ohlc_data_base():
         sess.get_ohlc_data("BADPAIR")
 
 
-def test_kraken_session_get_ohlc_data_interval():
+def test_get_ohlc_data_interval():
 
     interval_mins = 60
     asset_pair = 'SCXBT'
@@ -236,7 +236,7 @@ def test_kraken_session_get_ohlc_data_interval():
         sess.get_ohlc_data(asset_pair, interval=49)
 
 
-def test_kraken_session_get_ohlc_data_since():
+def test_get_ohlc_data_since():
 
     since_ts = 1610640300
     asset_pair = 'SCXBT'
@@ -250,7 +250,7 @@ def test_kraken_session_get_ohlc_data_since():
         sess.get_ohlc_data(asset_pair, since="badinput")
 
 
-def test_kraken_session_get_order_book_base():
+def test_get_order_book_base():
 
     asset_pair = "XXRPZCAD"
 
@@ -274,7 +274,7 @@ def test_kraken_session_get_order_book_base():
         sess.get_order_book("BadPAiR")
 
 
-def test_kraken_session_get_order_book_count():
+def test_get_order_book_count():
 
     asset_pair = "XXRPZCAD"
     count = 3
@@ -290,7 +290,7 @@ def test_kraken_session_get_order_book_count():
         sess.get_order_book(asset_pair, "four")
 
 
-def test_kraken_session_get_recent_trades_base():
+def test_get_recent_trades_base():
 
     asset_pair = "OXTETH"
 
@@ -310,7 +310,7 @@ def test_kraken_session_get_recent_trades_base():
         sess.get_recent_trades("UNKCURR")
 
 
-def test_kraken_session_get_recent_trades_since():
+def test_get_recent_trades_since():
 
     asset_pair = "OXTETH"
     since = 1610660648.5366
@@ -325,7 +325,7 @@ def test_kraken_session_get_recent_trades_since():
         sess.get_recent_trades(asset_pair, since="11-12-20")
 
 
-def test_kraken_session_get_recent_spead_data_base():
+def test_get_recent_spead_data_base():
 
     asset_pair = "ETH2.SETH"
 
@@ -346,7 +346,7 @@ def test_kraken_session_get_recent_spead_data_base():
         sess.get_recent_spread_data("EXXDEE")
 
 
-def test_kraken_session_get_recent_spread_data_since():
+def test_get_recent_spread_data_since():
 
     asset_pair = "ETH2.SETH"
     since = 1610650690.1234
@@ -361,7 +361,7 @@ def test_kraken_session_get_recent_spread_data_since():
         sess.get_recent_spread_data(asset_pair, since="bad")
 
 
-def test_kraken_session_bad_private_endpoint():
+def test_bad_private_endpoint():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
@@ -370,14 +370,14 @@ def test_kraken_session_bad_private_endpoint():
         sess._request_manager.make_private_request('UNKNOWN')
 
 
-def test_kraken_session_private_request_no_keys():
+def test_private_request_no_keys():
     sess = KrakenSession()
 
     with pytest.raises(NoApiKeysException):
         sess.get_account_balance()
 
 
-def test_kraken_session_get_account_balance_base():
+def test_get_account_balance_base():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
@@ -386,7 +386,7 @@ def test_kraken_session_get_account_balance_base():
     assert isinstance(account_balance, dict)
 
 
-def test_kraken_session_get_trade_balance_base():
+def test_get_trade_balance_base():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
@@ -395,7 +395,7 @@ def test_kraken_session_get_trade_balance_base():
     assert lists_match(trade_balance.keys(), TRADE_BALANCE_RESULT_KEYS)
 
 
-def test_kraken_session_get_trade_balance_aclass():
+def tes_kraken_session_get_trade_balance_aclass():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
@@ -407,7 +407,7 @@ def test_kraken_session_get_trade_balance_aclass():
         sess.get_trade_balance(aclass="otherstuff")
 
 
-def test_kraken_session_get_trade_balance_asset():
+def test_get_trade_balance_asset():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
@@ -418,7 +418,7 @@ def test_kraken_session_get_trade_balance_asset():
     with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_trade_balance(asset='FNYMN')
 
-def test_kraken_session_get_open_orders_base():
+def test_get_open_orders_base():
 
     sess = KrakenSession()
     sess.load_keys_from_file('kraken.key')
