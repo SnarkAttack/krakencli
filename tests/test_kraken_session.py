@@ -417,3 +417,11 @@ def test_kraken_session_get_trade_balance_asset():
 
     with pytest.raises(InvalidRequestParameterOptionsException):
         sess.get_trade_balance(asset='FNYMN')
+
+def test_kraken_session_get_open_orders_base():
+
+    sess = KrakenSession()
+    sess.load_keys_from_file('kraken.key')
+
+    open_orders = sess.get_open_orders()
+    assert lists_match(open_orders.keys(), ['open'])
